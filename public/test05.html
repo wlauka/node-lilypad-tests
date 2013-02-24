@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+<title>Test No. 05</title>
+<script type="text/javascript" src="//use.typekit.net/tey8vcx.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.0.1/d3.v3.min.js"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<link type="text/css" rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="content-wrap">
+<h1 class="icon-cog-alt">Node.js + Lilypad Test No. 05</h1>
+<p> Visualizing Sensor Data on the Screen in Real-Time. Socket.IO + D3</p>
+<section class="icon-chart-1">
+<div id="chart">
+</div>
+</section>
+<section>
+<code class="monospace">
+var http = require('http'),
+	five = require('johnny-five'),
+	connect = require('connect'),
+	io = require('socket.io');
+
+var freq = 120;
+	
+/* set up the HTTP Server
+----------------------------------------------- */
+var app = http.createServer(
+  connect()
+  .use(connect.favicon())
+  .use(connect.logger('dev'))
+  .use(connect.query())
+  .use(function(req, res,next){
+    console.log(req.query);
+    next();
+  })
+  .use(connect.static('public'))
+);
+
+var sio = io.listen(app); 
+app.listen(4000);
+
+/* Monitor Socket Communication
+----------------------------------------------- */
+
+sio.on('connection', function(socket) {
+	socket.emit('info', {'output': 'Connected. Listening for Sensor Data.. freq '+freq,'freq':freq});
+
+});
+
+/* Set Up the Lilypad
+----------------------------------------------- */
+var board = new five.Board();
+
+board.on("ready",function(){
+	
+	// Create strech sensor
+	cord = new five.Sensor({
+		pin:'A0',
+		freq:freq
+	});
+	
+	board.repl.inject({
+	cord: cord
+	});
+
+	cord.on('read', function(err, val){
+		console.log(val);
+		sio.sockets.emit('sensor',{output:val});
+	});
+
+}); // END board -> Ready 
+
+
+</code>
+</section>
+</div>
+<script type="text/javascript">
+
+	// Set up the data object
+	var data = {
+		min: 915,
+		max: 950,
+		readings: [],
+		freq: 0
+	};
+	
+	// Set up the Chart
+	var container = document.getElementById('chart'),
+		width = container.clientWidth,
+		height = container.clientHeight,
+		margin = [40,20,40,20]
+		
+	var chart = d3.select(container).append('svg')
+		.attr("width",width)
+		.attr("height",height);
+	
+	
+	var x = d3.scale.linear().domain([0,80]).range([80, width]);	
+	var y = d3.scale.linear()	
+		.domain([data.min,data.max])
+		.range([0+margin[2],height-margin[0]]);	
+	var yAxis = d3.svg.axis()
+		.scale(y).orient('right');
+	chart.append('g').attr('class', 'axis').call(yAxis);
+	chart.append('g').attr('class', 'grid').call(yAxis.tickSize(width,-50,0).tickFormat(""));
+	
+	
+	var line = d3.svg.line()
+		.x(function(d,i){ return x(i+80); })
+		.y(function(d){ return y(d); })
+		.interpolate("basis");
+		
+	chart.append("g").attr("id", "graph")
+		.append("path")
+		.attr("id","line")
+		.attr("d",line(data.readings))
+	
+	// Clipping Mask
+	chart.append("svg:clipPath")
+		.attr("id","clip")
+		.append("rect")
+		.attr("width",width-35)
+		.attr("height",height-margin[0]-margin[2]+5)
+		.attr("stroke","red")
+		.attr("fill","none")
+		.attr("transform","translate(35,"+(margin[0]-5)+")");
+	d3.select('#graph').attr("clip-path", "url(#clip)");
+	
+
+	// Open the Socket Connection
+	var socket = io.connect("http://localhost:4000");
+	socket.on('info',function(msg){ console.log(msg.output); data.freq = msg.freq});
+	socket.on('sensor', function(sensor){
+		data.readings.push(sensor.output);
+		updateChart();
+	});
+	
+	function updateChart(){		
+		chart.select("#line")
+			.attr("d",line(data.readings))
+			.transition()
+			.ease('linear')
+			.duration(data.freq)
+			.attr("transform", "translate(" + -x(data.readings.length) + ")");
+	}
+	
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+<title>Test No. 04</title>
+<script type="text/javascript" src="//use.typekit.net/tey8vcx.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.0.1/d3.v3.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js" type="text/javascript"></script>
+<link type="text/css" rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="content-wrap">
+<h1 class="icon-cog-alt">Node.js + Lilypad Test No. 04</h1>
+<p> Logging Sensor Data with Winston, and displaying in D3</p>
+<section class="icon-chart-1">
+<div id="chart">
+</div>
+</section>
+<section>
+<code class="monospace">
+var five = require('johnny-five'),
+	winston = require('winston'),
+	connect = require('connect');
+	
+
+/* set up the lilypad &amp; logging
+----------------------------------------------- */
+var board = new five.Board();
+winston.add(winston.transports.File,{filename:'readings.json'});
+
+board.on("ready",function(){
+	
+	// Create strech sensor
+	cord = new five.Sensor({
+		pin:'A0',
+		freq:'250'
+	});
+	
+	board.repl.inject({
+	cord: cord
+	});
+
+	cord.on('read', function(err, val){
+		winston.log('info','Sensor Reading',{milliseconds:new Date().getTime(), reading:val});
+	});
+
+}); // END board -> Ready
+
+/* set up the HTTP Server
+----------------------------------------------- */
+var app = connect()
+  .use(connect.favicon())
+  .use(connect.logger('dev'))
+  .use(connect.query())
+  .use(function(req, res,next){
+    console.log(req.query);
+    next();
+  })
+   .use(connect.static('public'))
+ .listen(4000);
+
+</code>
+</section>
+</div>
+<script type="text/javascript">
+	var container = document.getElementById('chart'),
+		width = container.clientWidth,
+		height = container.clientHeight,
+		margin = [40,20,40,20]
+		
+	var chart = d3.select(container).append('svg')
+		.attr("width",width)
+		.attr("height",height);
+	
+	var data = {};
+	d3.json("../readings.json",function(err,res) {
+		if(err) console.warn(err);
+		data.raw = res;
+		setup();
+	});
+
+	function setup(){
+		data.min = _.min(data.raw,function(log){ return log.reading}).reading;
+		data.max = _.max(data.raw,function(log){ return log.reading}).reading;	;
+		data.len = data.raw.length;
+		data.readings = _.pluck(data.raw, 'reading'),
+		data.display = [];
+		console.log(data.len);
+		// domain = number of points on the screen
+		var x = d3.scale.linear().domain([0,40]).range([40, width]);
+			
+		var y = d3.scale.linear()	
+			.domain([data.min,data.max])
+			.range([0+margin[2],height-margin[0]]);	
+		var yAxis = d3.svg.axis()
+			.scale(y).orient('right');
+		
+		chart.append('g').attr('class', 'axis').call(yAxis);
+		chart.append('g').attr('class', 'grid').call(yAxis.tickSize(width,-50,0).tickFormat(""));
+		
+		
+		var line = d3.svg.line()
+			.x(function(d,i){ return x(i+40); })
+			.y(function(d){ return y(d); })
+			.interpolate("basis");
+			
+		chart.append("g").attr("id", "graph")
+			.append("path")
+			.attr("id","line")
+			.attr("d",line(data.display))
+			
+		
+		var count = 0;
+		
+		chart.append("svg:clipPath")
+			.attr("id","clip")
+			.append("rect")
+			.attr("width",width-35)
+			.attr("height",height-margin[0]-margin[2]+5)
+			.attr("stroke","red")
+			.attr("fill","none")
+			.attr("transform","translate(35,"+(margin[0]-5)+")");
+		
+		d3.select('#graph').attr("clip-path", "url(#clip)");
+		
+		var animate = setInterval(function(){
+			var v = data.readings.shift();
+			data.display.push(v);
+			count++
+			update();
+		},300);
+	
+		function update(){		
+			if(count <= data.len){	
+			chart.select("#line")
+				.attr("d",line(data.display))
+				.transition()
+				.ease('linear')
+				.duration(2000)
+				.attr("transform", "translate(" + -x(count) + ")");
+			} else {
+				clearInterval(animate);
+			}
+		}
+	
+	}
+
+</script>
+</body>
+</html>

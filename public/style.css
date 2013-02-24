@@ -76,7 +76,10 @@ h1 {
 
 .monospace {
 	font-family: Consolas, "Andale Mono WT", "Lucida Console", Monaco, "Courier New", Courier, monospace;
-	white-space: pre;
+	white-space: -moz-pre-wrap;  
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	white-space: pre-wrap;
 	font-size: 13px;
 	font-size: 1.3rem;
 	line-height: 1.5;
@@ -119,7 +122,7 @@ h1 {
 
 .icon-infinity:before { content: '\221e'; } /* '∞' */
 .icon-flash:before { content: '\26a1'; 
-	color: #FDC212;
+	color: #FDAA12;
 } /* '⚡' */
 .icon-cog-alt:before { content: '\26ef'; color: #db279d;
 } /* '⛯' */
@@ -141,7 +144,7 @@ h1 {
 /* @group LAYOUT
 ----------------------------------------------- */
 body {
-	background: #ECECEC url('../images/wires_sm.png') no-repeat center 100px;
+	background: #ECECEC url('../images/wires_sm.png') repeat-x center 100px;
 }
 
 section {
@@ -212,6 +215,36 @@ section {
 }
 .window .icon-ok:before {
 	left: 5rem;
+}
+
+#chart {
+	height: 300px;
+}
+
+.axis {
+	fill: none;
+	stroke: none;
+	shape-rendering: crispEdges;
+	
+}
+.axis text {
+	font-family: sans-serif;
+	font-size: 10px;
+	stroke: #3c3c3c;
+	
+}
+.grid {
+	-webkit-transform: translate(35px,0);
+}
+.grid .tick {
+	stroke: #ECECEC;
+
+}
+
+#line {
+	fill: none;
+	stroke: #c84c9c;
+	stroke-width: 2px;
 }
 
 /* @end */
