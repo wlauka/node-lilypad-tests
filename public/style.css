@@ -48,7 +48,7 @@ table {
 html { font-size: 62.5%; /* 1em = 10px */ }
 
 p, a {
-	font-family: "ff-tisa-web-pro-1","ff-tisa-web-pro-2", Garamond, "Times New Roman", serif;  	
+	font-family: "ff-tisa-web-pro-1","ff-tisa-web-pro-2", Garamond, "Times New Roman", serif; 
 	font-size: 18px;
   	font-size: 1.8rem;
  	line-height: 1.618;
@@ -56,11 +56,14 @@ p, a {
  	margin-bottom: 2.6rem;
  	color: #333333; }
 
-h1, h2, h3, h4 {
-	font-family: "prenton-condensed-1","prenton-condensed-2",sans-serif;
-	font-size: 52px;
-	font-size: 5.2rem;
-	color: #2e3846;
+h1, section:before {
+	 font-family: "prenton-condensed-1","prenton-condensed-2",sans-serif;
+	 font-size: 52px;
+	 font-size: 5.2rem;
+	 color: #2e3846;
+}
+
+h1 {
 	letter-spacing: -1px;
 	line-height: 1.44444;
 	margin-bottom: 34px;
@@ -70,9 +73,15 @@ h1, h2, h3, h4 {
 	position: relative;
 }
 
-code, pre {
+
+.monospace {
 	font-family: Consolas, "Andale Mono WT", "Lucida Console", Monaco, "Courier New", Courier, monospace;
+	white-space: pre;
+	font-size: 13px;
+	font-size: 1.3rem;
+	line-height: 1.5;
 }
+
 
 .ff-tisa {
 	font-family: "ff-tisa-web-pro-1","ff-tisa-web-pro-2", Garamond, "Times New Roman", serif;  
@@ -109,14 +118,17 @@ code, pre {
 }
 
 .icon-infinity:before { content: '\221e'; } /* '∞' */
-.icon-flash:before { content: '\26a1'; } /* '⚡' */
+.icon-flash:before { content: '\26a1'; 
+	color: #FDC212;
+} /* '⚡' */
 .icon-cog-alt:before { content: '\26ef'; color: #db279d;
 } /* '⛯' */
-.icon-ok:before { content: '\2713'; } /* '✓' */
+.icon-ok:before { content: '\2713'; color: #c6e3c0;} /* '✓' */
 .icon-cancel:before { content: '\2715'; } /* '✕' */
 .icon-address:before { content: '\e723'; } /* '' */
 .icon-chart-pie-1:before { content: '\e801'; } /* '' */
-.icon-terminal:before { content: '\e7ac'; } /* '' */
+.icon-terminal:before { content: '\e7ac'; 
+} /* '' */
 .icon-lightbulb:before { content: '\f0eb'; color: #a64af4;
 } /* '' */
 .icon-chart-1:before { content: '\e800'; } /* '' */
@@ -130,6 +142,10 @@ code, pre {
 ----------------------------------------------- */
 body {
 	background: #ECECEC url('../images/wires_sm.png') no-repeat center 100px;
+}
+
+section {
+	 position: relative;
 }
 
 .content-wrap {
@@ -150,6 +166,9 @@ body {
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	font-size: 150%;
+	text-decoration: none;
+	margin: 1.5rem;
+	margin-top: 0;
 	display: inline-block;
 	padding: .5rem 1.5rem;
 	cursor: pointer;
@@ -160,9 +179,39 @@ body {
 		 -o-transition: all 0.1s ease-out;  /* Opera 10.5–12.00 */
 			transition: all 0.1s ease-out;  /* Firefox 16+, Opera 12.50+ */
 }
+.button:first-of-type {
+	margin-left: 0;
+}
 .button:hover {
 	background-color: #795aac;
 }
 
+.window {
+	background-color: #313945;
+	border: 4px solid #ECECEC;
+	border-top-color: #CCC;
+	border-bottom-color: #EFEFEF;
+	height: 18rem;
+	overflow: scroll;
+}
+.window p {
+	color: white;
+	padding: .5rem 2.5rem;
+	margin-bottom: 0;
+}
+.window p:nth-child(even){
+	background-color: #38414F;
+}
+
+.green {
+	 color: #c6e3c0;
+}
+.window .icon-ok {
+	color: #c6e3c0;
+	position: relative;
+}
+.window .icon-ok:before {
+	left: 5rem;
+}
 
 /* @end */

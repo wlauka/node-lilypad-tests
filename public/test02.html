@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<title>Test No. 02</title>
+<script type="text/javascript" src="//use.typekit.net/tey8vcx.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<link type="text/css" rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="content-wrap">
+<h1 class="icon-cog-alt">Node.js + Lilypad Test No. 02</h1>
+<p> Getting the strech sensor to work with johnny-five!</p>
+<code class="monospace">
+var five = require('johnny-five'),
+	connect = require('connect');
+	
+
+/* set up the lilypad
+----------------------------------------------- */
+var board = new five.Board();
+
+board.on("ready",function(){
+	
+	// Create strech sensor
+	cord = new five.Sensor({
+		pin:'A0',
+		freq:'250'
+	});
+	
+	board.repl.inject({
+	cord: cord
+	});
+
+	cord.on('read', function(err, val){
+		console.log(val);
+	});
+
+}); // END board -> Ready
+
+/* set up the HTTP Server
+----------------------------------------------- */
+var app = connect()
+  .use(connect.favicon())
+  .use(connect.logger('dev'))
+  .use(connect.query())
+  .use(function(req, res,next){
+    console.log(req.query);
+    next();
+  })
+   .use(connect.static('public'))
+ .listen(4000);
+</code>
+</div>
+</body>
+</html>
