@@ -17,4 +17,4 @@ Thumbs.db
 ###############################
 _build-files
 logs
-node-modules
+node_modules

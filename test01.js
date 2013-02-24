@@ -1,3 +1,8 @@
+// Node and Lilypad TEST NO. 02
+// 2/ 16 / 12
+//
+// Toggling LEDs in the browsers
+
 var five = require("johnny-five"),
 	http = require("http"),
 	fs = require("fs"),
