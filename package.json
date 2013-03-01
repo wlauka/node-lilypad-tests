@@ -1,8 +1,8 @@
 {
-  "name": "gyokuro.lilypad",
-  "version": "0.0.0",
-  "description": "ERROR: No README.md file found!",
-  "main": "helloworld.js",
+  "name": "node-lilypad-tests",
+  "version": "0.5",
+  "description": "A series of simple tests working with sensors from an Arduino Lilypad via Node.js",
+  "main": "noboard.js",
   "dependencies": {
     "johnny-five": "~0.5.14",
     "connect": "~2.7.3",
@@ -10,10 +10,10 @@
     "winston": "~0.6.2"
   },
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "repository": {
+  	"type":"git",
+  	"url":"https://github.com/wlauka/node-lilypad-tests.git"
   },
-  "repository": "",
-  "author": "",
+   "author":"Wesley Lauka",
   "license": "BSD"
 }
